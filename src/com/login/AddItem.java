@@ -1,0 +1,144 @@
+package com.login;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.sql.*;
+
+public class AddItem extends JFrame implements ActionListener {
+
+    Connection connection;
+    private static final String DB_URL = "jdbc:mysql://localhost/jewel";
+    static final String USER = "root";
+    Statement statement;
+    ResultSet rs;
+    JLabel name, category, weight;
+    JTextField textName, textWeight;
+    JButton button;
+    JRadioButton gold, silver, diamond;
+
+
+    AddItem() {
+        setTitle("Jewellery Management : Add Item");
+        setBounds(0, 0, 600, 600);
+        setLayout(new BorderLayout());
+        setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+
+        JLabel label = new RandomBackground(5);
+        add(label);
+
+        JLabel label1 = new JLabel("<html><h1><font color='white'>Add Item</font><h1></html>");
+        label1.setBounds(10, 10, 400, 40);
+        label.add(label1);
+
+        name = new JLabel("<html><font color='white'>Name : </font></html>");
+        name.setBounds(70, 220, 80, 30);
+        label.add(name);
+
+        category = new JLabel("<html><font color='white'>Category : </font></html>");
+        category.setBounds(70, 270, 80, 30);
+        label.add(category);
+
+        weight = new JLabel("<html><font color='white'>Weight (gms) : </font></html>");
+        weight.setBounds(70, 320, 80, 30);
+        label.add(weight);
+
+        textName = new JTextField();
+        textName.setBounds(160, 220, 200, 30);
+        label.add(textName);
+
+        JPanel panel = new JPanel(new FlowLayout());
+        gold = new JRadioButton("Gold");
+        gold.setSelected(true);
+        silver = new JRadioButton("Silver");
+        diamond = new JRadioButton("Diamond");
+        ButtonGroup radios = new ButtonGroup();
+        radios.add(gold);
+        radios.add(silver);
+        radios.add(diamond);
+        panel.add(gold);
+        panel.add(silver);
+        panel.add(diamond);
+        panel.setBounds(160, 270, 200, 30);
+        label.add(panel);
+
+        textWeight = new JTextField();
+        textWeight.setBounds(160, 320, 200, 30);
+        label.add(textWeight);
+
+        button = new JButton("Add");
+        button.setBounds(70, 470, 300, 30);
+        label.add(button);
+
+        button.addActionListener(this);
+        getConnection();
+        setVisible(true);
+        setIconImage(new ImageIcon("C:\\Users\\somesh\\IdeaProjects\\JewelleryManagement\\src\\com\\login\\icons8-Diamond-100.png").getImage());
+
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        try {
+            if(textName.getText()==null){
+                JOptionPane.showMessageDialog(this, "Name cannot be left empty");
+                return;
+            }
+            try {
+                Double.parseDouble(textWeight.getText());
+            }catch (NumberFormatException e1){
+                JOptionPane.showMessageDialog(this, "Weight should be an integer value");
+                return;
+            }
+            String category = "Gold";
+            rs.moveToInsertRow();
+            rs.updateString(2, textName.getText());
+            if (gold.isSelected()) {
+                category = "Gold";
+            } else if (silver.isSelected()) {
+                category = "Silver";
+            } else if (diamond.isSelected()) {
+                category = "Diamond";
+            }
+            rs.updateString(3, category);
+            rs.updateString(4, textWeight.getText());
+            rs.updateString(5, "Available");
+            rs.insertRow();
+        } catch (SQLException err) {
+            System.out.println("" + err.toString());
+            JOptionPane.showMessageDialog(this, "Item code already exists");
+            return;
+        }
+        closeConnection();
+        JOptionPane.showMessageDialog(this, "Entry added successfully");
+        dispose();
+    }
+
+    public void getConnection() {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            System.out.println("Connecting");
+            connection = DriverManager.getConnection(DB_URL, USER, "admin@123");
+            statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            rs = statement.executeQuery("select * from item");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public void closeConnection(){
+        try {
+            rs.close();
+            statement.close();
+            connection.close();
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+        }
+    }
+}
