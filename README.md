@@ -2,6 +2,7 @@
 Jewellery Shop management project for reference purpose only
 
 create tables in a mysql database with name 'jewel'
+
 bill
 customer
 has4
