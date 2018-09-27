@@ -67,7 +67,7 @@ public class SearchCustomer extends JFrame implements ActionListener {
         dropdownList = new ArrayList<>();
         if (e.getSource() == search) {
             list = new ArrayList<>();
-            searchQuery = "SELECT * FROM customer WHERE c_name=\"" + query.getText().toString() + "\";";
+            searchQuery = "SELECT * FROM customer WHERE c_name like \"%" + query.getText().toString() + "%\";";
             try {
                 rs = statement.executeQuery(searchQuery);
                 rs.first();

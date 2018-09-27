@@ -76,11 +76,11 @@ public class UpdateCustomer extends JFrame implements ActionListener {
             return;
         }
         try {
-            rs.moveToInsertRow();
+            rs.first();
             rs.updateString(2,textName.getText());
             rs.updateString(3,textAddress.getText());
             rs.updateString(4,textPhone.getText());
-            rs.insertRow();
+            rs.updateRow();
         }catch (SQLException e1){
             System.out.println("" + e1.toString());
             JOptionPane.showMessageDialog(this, "Error inserting item");
